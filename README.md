@@ -1,5 +1,7 @@
 # Clipboard History
 
+[简体中文](README.zh-CN.md)
+
 Clipboard History is a Windows desktop clipboard history tool built with Electron, React, and TypeScript.
 
 It runs in the background, records recent clipboard content, and lets you reopen a searchable clipboard history window with `Ctrl+Alt+V` or the tray icon.
