@@ -31,7 +31,7 @@ Download the latest portable `.exe` from GitHub Releases once releases are publi
 For a local build, use:
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 npm.cmd install
 npm.cmd run dist:portable
 ```

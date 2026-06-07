@@ -9,7 +9,7 @@
 ## 项目结构
 
 ```text
-C:\Users\Administrator\Desktop\file
+<project-root>
 ├── package.json                 # 项目脚本、依赖、electron-builder 打包配置
 ├── package-lock.json            # npm 依赖锁定文件
 ├── electron.vite.config.ts      # electron-vite 构建配置
@@ -171,7 +171,7 @@ interface ClipboardSettings {
 运行后数据保存在 Electron 的 `app.getPath('userData')` 目录。当前应用通常对应：
 
 ```text
-C:\Users\Administrator\AppData\Roaming\windows-clipboard-history
+%APPDATA%\windows-clipboard-history
 ```
 
 里面主要有：
@@ -196,7 +196,7 @@ C:\Users\Administrator\AppData\Roaming\windows-clipboard-history
 所有 `npm.cmd` 命令都需要在项目目录中运行：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 npm.cmd install
 npm.cmd run dev
 npm.cmd run build
@@ -205,8 +205,8 @@ npm.cmd run build
 也可以不切换目录，直接使用 `--prefix`：
 
 ```powershell
-npm.cmd --prefix C:\Users\Administrator\Desktop\file run dev
-npm.cmd --prefix C:\Users\Administrator\Desktop\file run preview
+npm.cmd --prefix <project-root> run dev
+npm.cmd --prefix <project-root> run preview
 ```
 
 PowerShell 中直接运行 `npm` 可能遇到执行策略限制，因此建议使用 `npm.cmd`。
@@ -225,7 +225,7 @@ PowerShell 中直接运行 `npm` 可能遇到执行策略限制，因此建议�
 生成单文件便携版 exe：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 $env:ELECTRON_BUILDER_BINARIES_MIRROR='https://npmmirror.com/mirrors/electron-builder-binaries/'
 npm.cmd run dist:portable
 ```
@@ -233,7 +233,7 @@ npm.cmd run dist:portable
 产物位置：
 
 ```text
-C:\Users\Administrator\Desktop\file\release\Clipboard History 0.1.0.exe
+<project-root>\release\Clipboard History 0.1.0.exe
 ```
 
 这个 exe 可以复制到其他 Windows x64 设备上直接运行，不需要安装 Node.js，也不需要复制源码目录。第一次运行时，便携版会把 Electron 运行时释放到系统临时目录，然后启动托盘常驻应用。
@@ -241,14 +241,14 @@ C:\Users\Administrator\Desktop\file\release\Clipboard History 0.1.0.exe
 生成文件夹版：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 npm.cmd run dist:dir
 ```
 
 文件夹版位置：
 
 ```text
-C:\Users\Administrator\Desktop\file\release\win-unpacked\Clipboard History.exe
+<project-root>\release\win-unpacked\Clipboard History.exe
 ```
 
 文件夹版需要把整个 `win-unpacked` 文件夹一起复制到其他设备，只复制里面的 `Clipboard History.exe` 不够。
@@ -256,7 +256,7 @@ C:\Users\Administrator\Desktop\file\release\win-unpacked\Clipboard History.exe
 完整安装包命令：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 $env:ELECTRON_BUILDER_BINARIES_MIRROR='https://npmmirror.com/mirrors/electron-builder-binaries/'
 npm.cmd run dist
 ```
@@ -270,21 +270,21 @@ npm.cmd run dist
 开发运行：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 npm.cmd run dev
 ```
 
 生产预览运行：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 npm.cmd run preview
 ```
 
 直接使用打包好的 exe：
 
 ```text
-C:\Users\Administrator\Desktop\file\release\Clipboard History 0.1.0.exe
+<project-root>\release\Clipboard History 0.1.0.exe
 ```
 
 应用启动后会后台常驻，并在 Windows 托盘区域显示历史剪贴板图标。
@@ -374,7 +374,7 @@ C:\Users\Administrator\Desktop\file\release\Clipboard History 0.1.0.exe
 当前已生成的便携版 exe：
 
 ```text
-C:\Users\Administrator\Desktop\file\release\Clipboard History 0.1.0.exe
+<project-root>\release\Clipboard History 0.1.0.exe
 ```
 
 最近一次重新打包后，托盘图标已改为不透明位图，避免 Windows 右下角显示成透明图标。

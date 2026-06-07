@@ -31,7 +31,7 @@ Clipboard History 是一个 Windows 桌面历史剪贴板工具，使用 Electro
 本地打包：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\file
+cd <project-root>
 npm.cmd install
 npm.cmd run dist:portable
 ```
