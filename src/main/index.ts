@@ -32,6 +32,7 @@ let watcher: ClipboardWatcher
 let imageFilePasteService: ImageFilePasteService | null = null
 let isQuitting = false
 let lastForegroundWindow: string | null = null
+let backgroundServicesTimer: NodeJS.Timeout | null = null
 const thumbnailCache = new Map<string, string | null>()
 
 function createTrayIcon(): Electron.NativeImage {
@@ -430,9 +431,18 @@ if (!app.requestSingleInstanceLock()) {
       void showHistoryWindow()
     })
 
-    imageFilePasteService.start()
     buildTrayMenu()
-    watcher.start()
+
+    // Keep the tray responsive immediately after launch. The two background
+    // services can synchronously inspect the clipboard (and, for Explorer
+    // image pasting, start a PowerShell query), which otherwise competes with
+    // the first native tray-menu interaction on Windows.
+    backgroundServicesTimer = setTimeout(() => {
+      backgroundServicesTimer = null
+      imageFilePasteService?.start()
+      watcher.start()
+    }, 750)
+    backgroundServicesTimer.unref?.()
   })
 }
 
@@ -442,6 +452,10 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', () => {
   isQuitting = true
+  if (backgroundServicesTimer) {
+    clearTimeout(backgroundServicesTimer)
+    backgroundServicesTimer = null
+  }
   imageFilePasteService?.stop()
   watcher?.stop()
   globalShortcut.unregisterAll()
