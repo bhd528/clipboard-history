@@ -176,7 +176,7 @@ export class ClipboardWatcher {
   }
 
   suppressFor(ms: number): void {
-    this.suppressUntil = Date.now() + ms
+    this.suppressUntil = Math.max(this.suppressUntil, Date.now() + ms)
   }
 
   private async capture(): Promise<void> {
@@ -200,10 +200,16 @@ export class ClipboardWatcher {
 
   private async readCurrentClipboard(): Promise<PendingHistoryItem | null> {
     const formats = clipboard.availableFormats().sort()
-    const text = clipboard.readText()
-    const html = clipboard.readHTML()
-    const rtf = clipboard.readRTF()
-    const image = clipboard.readImage()
+    const normalizedFormats = new Set(formats.map((format) => format.toLowerCase()))
+    // Clipboard reads are synchronous in Electron. Avoid asking Windows to
+    // materialize formats that are not actually present: certain applications
+    // advertise expensive delayed-rendering formats, which can briefly block
+    // the main process and make the tray appear busy.
+    const text = normalizedFormats.has('text/plain') ? clipboard.readText() : ''
+    const html = normalizedFormats.has('text/html') ? clipboard.readHTML() : ''
+    const rtf = normalizedFormats.has('text/rtf') ? clipboard.readRTF() : ''
+    const hasImageFormat = [...normalizedFormats].some((format) => format.startsWith('image/'))
+    const image = hasImageFormat ? clipboard.readImage() : nativeImage.createEmpty()
     const imageSize = image.isEmpty() ? undefined : image.getSize()
     const filePaths = isFileDropCandidate(formats) ? await readClipboardFileDropList() : []
     const lightFingerprint = createHash('sha256')

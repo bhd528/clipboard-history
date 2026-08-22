@@ -142,6 +142,7 @@ export class ImageFilePasteService {
   private registrationFailed = false
   private monitorTimer: NodeJS.Timeout | null = null
   private resumeTimer: NodeJS.Timeout | null = null
+  private suspendedUntil = 0
 
   constructor(
     private readonly getWatcher: () => ClipboardWatcher | null,
@@ -181,6 +182,10 @@ export class ImageFilePasteService {
     return this.registrationFailed
   }
 
+  suspendFor(ms: number): void {
+    this.suspendedUntil = Math.max(this.suspendedUntil, Date.now() + ms)
+  }
+
   private startMonitor(): void {
     if (this.monitorTimer) {
       return
@@ -201,7 +206,7 @@ export class ImageFilePasteService {
   }
 
   private async refreshShortcutRegistration(): Promise<void> {
-    if (this.checking || this.handling) {
+    if (this.checking || this.handling || Date.now() < this.suspendedUntil) {
       return
     }
 

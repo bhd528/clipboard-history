@@ -22,6 +22,8 @@ protocol.registerSchemesAsPrivileged([
 const isDev = Boolean(process.env.ELECTRON_RENDERER_URL)
 const PASTE_SUPPRESSION_MS = 1800
 const THUMBNAIL_EDGE_PX = 96
+const TRAY_INTERACTION_SUPPRESSION_MS = 1800
+const BACKGROUND_SERVICES_DELAY_MS = 5000
 
 app.disableHardwareAcceleration()
 
@@ -426,6 +428,12 @@ if (!app.requestSingleInstanceLock()) {
     tray.on('click', () => {
       void showHistoryWindow()
     })
+    const pauseBackgroundWorkForTray = (): void => {
+      watcher.suppressFor(TRAY_INTERACTION_SUPPRESSION_MS)
+      imageFilePasteService?.suspendFor(TRAY_INTERACTION_SUPPRESSION_MS)
+    }
+    tray.on('mouse-move', pauseBackgroundWorkForTray)
+    tray.on('right-click', pauseBackgroundWorkForTray)
 
     globalShortcut.register('CommandOrControl+Alt+V', () => {
       void showHistoryWindow()
@@ -441,7 +449,7 @@ if (!app.requestSingleInstanceLock()) {
       backgroundServicesTimer = null
       imageFilePasteService?.start()
       watcher.start()
-    }, 750)
+    }, BACKGROUND_SERVICES_DELAY_MS)
     backgroundServicesTimer.unref?.()
   })
 }
